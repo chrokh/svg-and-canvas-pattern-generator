@@ -93,21 +93,31 @@ class Pattern
     end
   end
 
+  def to_html
+    html_opening + html_closing
+  end
+
   def to_xml
-    xml = """
-      <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
+    xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
+    xml += html_opening
+    @shapes.each do |shape|
+      xml += shape.to_xml
+    end
+    xml += html_closing
+  end
+
+  private
+
+  def html_opening
+    """
       <svg xmlns=\"http://www.w3.org/2000/svg\"
         width=\"#{Boundries.width}\"
           height=\"#{Boundries.height}\">
     """
+  end
 
-    @shapes.each do |shape|
-      xml += shape.to_xml
-    end
-
-    xml += """
-      </svg>
-    """
+  def html_closing
+    "</svg>"
   end
 end
 
@@ -123,10 +133,14 @@ class Generator
   def to_xml
     @patterns.map(&:to_xml)
   end
+
+  def to_html
+    @patterns.map(&:to_html)
+  end
 end
 
 
 #
 # MAIN
 #
-puts Generator.new.to_xml
+puts Generator.new(50).to_xml
