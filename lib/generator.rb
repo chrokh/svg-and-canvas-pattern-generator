@@ -111,6 +111,22 @@ class Pattern
   end
 end
 
-10.times do
-  puts Pattern.new.to_xml
+
+class Generator
+  def initialize(number_of_examples=10)
+    @patterns = []
+    number_of_examples.times do
+      @patterns.push Pattern.new
+    end
+  end
+
+  def to_xml
+    @patterns.map(&:to_xml)
+  end
 end
+
+
+#
+# MAIN
+#
+puts Generator.new.to_xml
