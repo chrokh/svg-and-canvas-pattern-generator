@@ -23,7 +23,7 @@ class Circle < Shape
 end
 
 class Rect < Shape
-  attr_accessor :x, :y, :width, :height
+  attr_accessor :x, :y, :width, :height, :rotation
 
   def initialize
     super
@@ -31,10 +31,14 @@ class Rect < Shape
     @y = Rand.next
     @width = Rand.next_non_zero
     @height = Rand.next_non_zero
+    @rotation = Rand.next_rotation
   end
 
   def to_xml
-    "<rect x=\"#{@x}\" y=\"#{@y}\" width=\"#{@width}\" height=\"#{@height}\" fill=\"#{@fill_color}\" /> "
+    centerX = @x + @width / 2
+    centerY = @y + @height / 2
+    rotation = "transform=\"rotate(#{@rotation}, #{centerX}, #{centerY})\""
+    "<rect x=\"#{@x}\" y=\"#{@y}\" width=\"#{@width}\" height=\"#{@height}\" fill=\"#{@fill_color}\" #{rotation} /> "
   end
 end
 
@@ -63,6 +67,13 @@ class Rand
     n = rand(1..max)
     n * Boundries.step_size
   end
+
+  def self.next_rotation()
+    rotation_step = 45
+    steps = 360 / rotation_step
+    n = rand(1..steps)
+    n * rotation_step
+  end
 end
 
 class Boundries
@@ -88,9 +99,10 @@ class Pattern
 
   def initialize
     @shapes = []
-    30.times do
+    3.times do
       @shapes.push Rect.new
     end
+    1.times{ @shapes.push Circle.new }
   end
 
   def to_html
