@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 class Shape
   attr_accessor :fill_color, :stroke_color
 
@@ -152,7 +154,55 @@ class Generator
 end
 
 
-#
-# MAIN
-#
-puts Generator.new(50).to_xml
+class FileWriter
+  def self.write_array_to_folder(array, folder, ext)
+    folder = File.join(Dir.pwd, folder)
+    if(File.directory?(folder))
+      array.each_with_index do |data, n|
+        file = "#{n}.#{ext}"
+        path = File.join(folder, file)
+        File.open(path, 'w') { |file| file.write(data) }
+      end
+    else
+      puts "Folder '#{folder}' does not exist!"
+    end
+  end
+end
+
+def main
+  args = []
+  ARGV.each do |arg|
+    args.push arg
+  end
+  puts
+  run(args)
+  puts
+end
+
+def run(args)
+  if args.length > 0
+    case args[0]
+    when "-h", "--help"
+      display_help
+    when "--html"
+      puts Generator.new(50).to_html
+    when "--xml"
+      folder = args[1]
+      svgs = Generator.new(50).to_xml
+      FileWriter.write_array_to_folder(svgs, folder, 'svg')
+      puts "\t Wrote 50 files to #{folder}/*.svg"
+    end
+  else
+    display_help
+  end
+end
+
+def display_help
+  puts "\t Usage:"
+  puts
+  puts "\t -h (--help) \t Help"
+  puts "\t --xml [folder]  Export each svg as separate xml file to path"
+  puts "\t --html \t Output all svgs as inline html to STO"
+end
+
+main
